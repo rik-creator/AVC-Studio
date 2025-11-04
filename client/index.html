@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BAT-VC Agentic Studio</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Login/Register Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Welcome to BAT-VC Agentic Studio</h2>
+                <p>Execution-as-a-Service meets Venture Capital</p>
+            </div>
+            <div id="authTabs" class="tabs">
+                <button class="tab-btn active" onclick="showAuthTab('login')">Login</button>
+                <button class="tab-btn" onclick="showAuthTab('register')">Register</button>
+            </div>
+            
+            <!-- Login Form -->
+            <div id="loginTab" class="auth-tab active">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="loginEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Login</button>
+                </form>
+            </div>
+            
+            <!-- Register Form -->
+            <div id="registerTab" class="auth-tab">
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="registerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="registerEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password (min 6 characters)</label>
+                        <input type="password" id="registerPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label>I am a:</label>
+                        <div class="role-selection">
+                            <label class="role-option">
+                                <input type="radio" name="role" value="founder" checked>
+                                <span>🚀 Founder</span>
+                            </label>
+                            <label class="role-option">
+                                <input type="radio" name="role" value="vc">
+                                <span>💼 VC</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group" id="founderFields">
+                        <label>Company Name (Optional)</label>
+                        <input type="text" id="registerCompany">
+                        <label>Stage (Optional)</label>
+                        <select id="registerStage">
+                            <option value="">Select stage</option>
+                            <option value="idea">Idea Stage</option>
+                            <option value="mvp">MVP Development</option>
+                            <option value="early">Early Stage</option>
+                            <option value="growth">Growth Stage</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-primary">Create Account</button>
+                </form>
+            </div>
+            
+            <div id="authError" class="error-message"></div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="app" class="hidden">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <h1>🚀 BAT-VC Agentic Studio</h1>
+                </div>
+                <div class="nav-menu">
+                    <span id="userInfo" class="user-info"></span>
+                    <button id="logoutBtn" class="btn-secondary">Logout</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Founder Journey -->
+        <div id="founderDashboard" class="dashboard hidden">
+            <div class="journey-container">
+                <div class="journey-progress">
+                    <h2>Your Startup Journey</h2>
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill"></div>
+                    </div>
+                    <div class="steps-list" id="stepsList"></div>
+                </div>
+                
+                <div class="step-content-container">
+                    <!-- Step 1: Onboarding -->
+                    <div id="step1" class="step-content">
+                        <h2>👋 Welcome! Let's Get Started</h2>
+                        <form id="onboardingForm">
+                            <div class="form-group">
+                                <label>What's your name?</label>
+                                <input type="text" id="founderName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>What industry are you in?</label>
+                                <input type="text" id="founderIndustry" placeholder="e.g., FinTech, SaaS, E-commerce" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Tell us about your experience</label>
+                                <textarea id="founderExperience" rows="4" placeholder="Your background, previous projects, etc." required></textarea>
+                            </div>
+                            <div class="step-actions">
+                                <button type="submit" class="btn-primary">Continue →</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Step 2: Idea Validation -->
+                    <div id="step2" class="step-content hidden">
+                        <h2>💡 Validate Your Idea</h2>
+                        <form id="ideaForm">
+                            <div class="form-group">
+                                <label>What problem are you solving?</label>
+                                <textarea id="problemStatement" rows="4" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Who is your target audience?</label>
+                                <input type="text" id="targetAudience" required>
+                            </div>
+                            <div class="form-group">
+                                <label>What makes your solution unique?</label>
+                                <textarea id="uniqueValue" rows="3" required></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary">Get AI Validation</button>
+                        </form>
+                        
+                        <!-- AI Validation Results -->
+                        <div id="aiValidationResults" class="ai-results hidden">
+                            <div class="ai-header">
+                                <span class="ai-icon">🤖</span>
+                                <h3>AI Analysis Complete</h3>
+                            </div>
+                            
+                            <div class="validation-card">
+                                <h4>Market Opportunity</h4>
+                                <p id="marketSize"></p>
+                            </div>
+                            
+                            <div class="validation-card">
+                                <h4>Competitive Landscape</h4>
+                                <ul id="competitors"></ul>
+                            </div>
+                            
+                            <div class="validation-card">
+                                <h4>Feasibility Score</h4>
+                                <div class="score-display">
+                                    <span id="feasibilityScore" class="score-number">--</span>
+                                    <span class="score-label">/ 100</span>
+                                </div>
+                                <p id="feasibilityExplanation"></p>
+                            </div>
+                            
+                            <div class="validation-card">
+                                <h4>Key Recommendations</h4>
+                                <ul id="recommendations"></ul>
+                            </div>
+                            
+                            <!-- AI Chat Interface -->
+                            <div class="ai-chat">
+                                <h4>Ask Follow-up Questions</h4>
+                                <div id="chatMessages" class="chat-messages"></div>
+                                <div class="chat-input">
+                                    <input type="text" id="chatInput" placeholder="Ask the AI advisor...">
+                                    <button id="sendChat">Send</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step-actions">
+                            <button onclick="previousStep()" class="btn-secondary">← Previous</button>
+                            <button id="step2Next" onclick="nextStep()" class="btn-primary" disabled>
+                                Save & Continue →
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: AI Suite -->
+                    <div id="step3" class="step-content hidden">
+                        <h2>🤖 Configure Your AI Suite</h2>
+                        <form id="aiSuiteForm">
+                            <div class="form-group">
+                                <label>Select AI Tools (or let AI recommend)</label>
+                                <div class="ai-tools-grid" id="aiToolsGrid"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Custom Requirements</label>
+                                <textarea id="customRequirements" rows="4" placeholder="Any specific AI tool needs or requirements..."></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary">Get AI Recommendations</button>
+                        </form>
+                        
+                        <div id="aiRecommendations" class="ai-results hidden">
+                            <div class="ai-header">
+                                <span class="ai-icon">🤖</span>
+                                <h3>AI Tool Recommendations</h3>
+                            </div>
+                            <div id="recommendedTools"></div>
+                        </div>
+                        
+                        <div class="step-actions">
+                            <button onclick="previousStep()" class="btn-secondary">← Previous</button>
+                            <button id="step3Next" onclick="nextStep()" class="btn-primary" disabled>
+                                Save & Continue →
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: MVP Development -->
+                    <div id="step4" class="step-content hidden">
+                        <h2>🛠️ Build Your MVP</h2>
+                        <form id="mvpForm">
+                            <div class="form-group">
+                                <label>MVP Features</label>
+                                <div id="featuresList"></div>
+                                <button type="button" onclick="addFeature()" class="btn-secondary">+ Add Feature</button>
+                            </div>
+                            <div class="form-group">
+                                <label>Timeline</label>
+                                <select id="mvpTimeline">
+                                    <option value="8">8 weeks</option>
+                                    <option value="10">10 weeks</option>
+                                    <option value="12">12 weeks</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn-primary">Get MVP Guidance</button>
+                        </form>
+                        
+                        <div id="mvpGuidance" class="ai-results hidden">
+                            <div class="ai-header">
+                                <span class="ai-icon">🤖</span>
+                                <h3>MVP Development Plan</h3>
+                            </div>
+                            <div id="mvpPlan"></div>
+                        </div>
+                        
+                        <div class="step-actions">
+                            <button onclick="previousStep()" class="btn-secondary">← Previous</button>
+                            <button id="step4Next" onclick="nextStep()" class="btn-primary" disabled>
+                                Save & Continue →
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: Testing -->
+                    <div id="step5" class="step-content hidden">
+                        <h2>🧪 Test Your Product</h2>
+                        <p>Testing phase content will be here...</p>
+                        <div class="step-actions">
+                            <button onclick="previousStep()" class="btn-secondary">← Previous</button>
+                            <button onclick="nextStep()" class="btn-primary">Continue →</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 6: GTM Strategy -->
+                    <div id="step6" class="step-content hidden">
+                        <h2>📈 Go-to-Market Strategy</h2>
+                        <form id="gtmForm">
+                            <div class="form-group">
+                                <label>Product Description</label>
+                                <textarea id="productDescription" rows="4" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Marketing Budget</label>
+                                <input type="text" id="marketingBudget" placeholder="e.g., $10,000">
+                            </div>
+                            <div class="form-group">
+                                <label>Launch Timeline</label>
+                                <input type="text" id="launchTimeline" placeholder="e.g., 90 days" required>
+                            </div>
+                            <button type="submit" class="btn-primary">Generate GTM Strategy</button>
+                        </form>
+                        
+                        <div id="gtmStrategy" class="ai-results hidden">
+                            <div class="ai-header">
+                                <span class="ai-icon">🤖</span>
+                                <h3>Your Go-to-Market Strategy</h3>
+                            </div>
+                            <div id="gtmPlan"></div>
+                        </div>
+                        
+                        <div class="step-actions">
+                            <button onclick="previousStep()" class="btn-secondary">← Previous</button>
+                            <button id="step6Next" onclick="nextStep()" class="btn-primary" disabled>
+                                Save & Continue →
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 7: PMF -->
+                    <div id="step7" class="step-content hidden">
+                        <h2>📊 Product-Market Fit</h2>
+                        <form id="pmfForm">
+                            <div class="form-group">
+                                <label>Total Users</label>
+                                <input type="number" id="totalUsers">
+                            </div>
+                            <div class="form-group">
+                                <label>Active Users (30d)</label>
+                                <input type="number" id="activeUsers">
+                            </div>
+                            <div class="form-group">
+                                <label>Retention Rate (%)</label>
+                                <input type="number" id="retentionRate" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label>Churn Rate (%)</label>
+                                <input type="number" id="churnRate" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label>Revenue ($)</label>
+                                <input type="number" id="revenue">
+                            </div>
+                            <div class="form-group">
+                                <label>CAC (Customer Acquisition Cost)</label>
+                                <input type="number" id="cac">
+                            </div>
+                            <div class="form-group">
+                                <label>LTV (Lifetime Value)</label>
+                                <input type="number" id="ltv">
+                            </div>
+                            <button type="submit" class="btn-primary">Analyze Metrics</button>
+                        </form>
+                        
+                        <div id="pmfAnalysis" class="ai-results hidden">
+                            <div class="ai-header">
+                                <span class="ai-icon">🤖</span>
+                                <h3>Metrics Analysis</h3>
+                            </div>
+                            <div id="pmfResults"></div>
+                        </div>
+                        
+                        <div class="step-actions">
+                            <button onclick="previousStep()" class="btn-secondary">← Previous</button>
+                            <button id="step7Next" onclick="nextStep()" class="btn-primary" disabled>
+                                Save & Continue →
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 8: Success -->
+                    <div id="step8" class="step-content hidden">
+                        <h2>🎉 Congratulations!</h2>
+                        <p>You've completed your startup journey!</p>
+                        <div class="step-actions">
+                            <button onclick="previousStep()" class="btn-secondary">← Previous</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VC Dashboard -->
+        <div id="vcDashboard" class="dashboard hidden">
+            <div class="vc-container">
+                <h2>VC Portfolio Dashboard</h2>
+                
+                <div class="vc-stats">
+                    <div class="stat-card">
+                        <h3>Total Companies</h3>
+                        <p id="totalCompanies">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Invested</h3>
+                        <p id="totalInvested">$0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Avg Health Score</h3>
+                        <p id="avgHealthScore">0</p>
+                    </div>
+                </div>
+                
+                <div class="vc-tabs">
+                    <button class="tab-btn active" onclick="showVCTab('portfolio')">Portfolio</button>
+                    <button class="tab-btn" onclick="showVCTab('pipeline')">Pipeline</button>
+                    <button class="tab-btn" onclick="showVCTab('analytics')">Analytics</button>
+                </div>
+                
+                <div id="portfolioTab" class="vc-tab-content active">
+                    <h3>Portfolio Companies</h3>
+                    <div id="portfolioList"></div>
+                </div>
+                
+                <div id="pipelineTab" class="vc-tab-content hidden">
+                    <h3>Investment Pipeline</h3>
+                    <div id="pipelineView"></div>
+                </div>
+                
+                <div id="analyticsTab" class="vc-tab-content hidden">
+                    <h3>Analytics</h3>
+                    <canvas id="analyticsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-spinner"></div>
+        <p id="loadingText">Loading...</p>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+
